@@ -1,0 +1,253 @@
+---
+title: "🕊️ Tweet Analytics for Disaster & Calamity Management"
+subtitle: "Proposal"
+format: html
+editor: visual
+---
+
+```{r load-packages, echo=FALSE, message=FALSE, warning=FALSE}
+
+if(!require(pacman))
+  install.packages("pacman")
+
+pacman::p_load(here, tidyverse, dplyr,
+               formattable
+               )
+```
+
+## High Level Goal
+
+Unleashing the Power of Twitter to strengthen Disaster Response and safeguard public safety during Critical Events.
+
+## **Goal Description & Motivation:**
+
+Social media platforms like Twitter provide an unprecedented opportunity to access a vast amount of information and gain insights directly from those affected by disasters. By analyzing the conversations and trends on Twitter during such situations, the project aims to uncover patterns, validate the truthfulness of information, improve situational awareness, and ultimately contribute to the resilience and safety of individuals and communities faced with critical events.\
+The major motivation behind the proposed project is to save lives and improve public safety by harnessing the power of Twitter data to access real-time information, understand & validate public sentiment.
+
+## Dataset
+
+This dataset has been taken from [**Natural Language Processing with Disaster Tweets**](https://www.kaggle.com/competitions/nlp-getting-started) competition. Kaggle provides a large variation of datasets for several tasks. From all the annotated datasets, labelled Twitter datasets with accurate findings is a challenge to get. Twitter has become an important communication channel in times of emergency. The ubiquitousness of smartphones enables people to announce an emergency they're observing in real-time. Because of this, more agencies are interested in programatically monitoring Twitter (i.e. disaster relief organizations and news agencies).
+
+There are two main files associated with this dataset:
+
+-   `train.csv` \| `test.csv`
+
+    **Data Glimpse**
+
+    ```{r table-one, echo=FALSE, message = FALSE, warning=FALSE}
+
+    tibble(id = "66",
+           keyword = "ablaze",
+           location = "GREENSBORO,NORTH CAROLINA",
+           text = "How the West was burned: Thousands of wildfire...",
+           target = 1
+          ) |>
+      formattable()
+
+
+
+    ```
+
+    **Data Description**
+
+    | Column Name | Data Type       | Description                                                                                     |
+    |---------------|---------------|-------------------------------------------|
+    | id          | Integer         | A unique identifier for each tweet                                                              |
+    | text        | List of strings | It contains the text of the tweet                                                               |
+    | location    | List of strings | The location the tweet was sent from (may be blank)                                             |
+    | keyword     | List of Strings | A particular keyword from the tweet (may be blank)                                              |
+    | target      | Integer         | in **train.csv** only, this denotes whether a tweet is about a real disaster (`1`) or not (`0`) |
+
+    The train data set will be used to train the model on the credibility of the tweet, and the test data will be used to validate the training parameters.
+
+For streaming API, we will be using [NTscraper](https://pypi.org/project/ntscraper/), a webscraping based python package, to create a Nitter object which uses Beautiful soup in the back end to fetch tweet details such as "text", "username" and statistics such as "likes","comments" and "retweets". This is almost similar to the Tweet JSON obtained from the twitter v2 API.\
+*The individual data streamed by the official twitter API (https://developer.twitter.com/en/docs/tutorials/consuming-streaming-data) has been revoked.*
+
+-   Tweets: Individual Tweet JSON objects
+
+    -   We will be utilizing the Tweet JSON (shown below) to analyze and classify them into real or fake. This can be particularly useful for disaster management departments, as the analysis of these tweets can help extract crucial information, such as the geolocation of the tweet, which can be used to send help to those in need.
+
+        ```{r, eval=FALSE, collapse=TRUE, message=FALSE}
+        #| code-fold: true
+        #| code-summary: Expand to reveal Tweet JSON output
+
+        {
+          "created_at": "Thu Apr 06 15:24:15 +0000 2017",
+          "id_str": "850006245121695744",
+          "text": "1\/ Today we\u2019re sharing our vision for the future of the Twitter API platform!\nhttps:\/\/t.co\/XweGngmxlP",
+          "user": {
+            "id": 2244994945,
+            "name": "Twitter Dev",
+            "screen_name": "TwitterDev",
+            "location": "Internet",
+            "url": "https:\/\/dev.twitter.com\/",
+            "description": "Your official source for Twitter Platform news, updates & events. Need technical help? Visit https:\/\/twittercommunity.com\/ \u2328\ufe0f #TapIntoTwitter"
+          },
+          "stats": {
+            "likes": 12,
+            "comments": 1,
+            "retweets": 0
+            },
+          }
+        }
+        ```
+
+        | Key Name   | Data Type    | Description                                                                                   |
+        |---------------------------|-----------------|-----------------------------|
+        | created_at | String       | UTC time when this Tweet was created.                                                         |
+        | id_str     | String       | The string representation of the unique identifier for this Tweet.                            |
+        | text       | String       | The actual UTF-8 text of the status update.                                                   |
+        | user       | User object  | The user who posted this Tweet. See User data dictionary for complete list of attributes.     |
+        | stats      | Stats Object | A dictinary contatining tweet statistics such as number of likes, total comments and retweets |
+
+The combination of these two sources provides a rich and comprehensive data set for our application.
+
+## Reason For Choosing This Source
+
+These dataset's not only provide a large volume of data but also offer unique features that align well with our project's objectives. The combination of historical data from `Kaggle` and real-time data from `NTscraper` can provide a robust foundation for the tweet analysis application.
+
+## Problem Statement
+
+The dynamic nature of disasters and calamities demands a proactive approach to information gathering and analysis. Traditional methods often fail to adapt quickly to evolving situations, hindering the ability of emergency responders to anticipate needs and allocate resources effectively. Furthermore, ensuring the reliability and credibility of the information shared on Twitter during these events is crucial, as misinformation and rumors can lead to panic and confusion among the affected population.
+
+## Analysis Plan
+
+For the project, we are going to split into weekly milestones and attack the project in a piece by piece method. The goal is to build on the project an deploy a fully functional real-time classifier from the Twitter API. The plan is split into 6 weeks, with each of the key milestones described as follows:
+
+**Week 1:**
+
+**Avikal and Himanshu:**
+
+-   Dataset Exploration
+
+    -   Extract characteristics from the dataset, like UserID, Message Content, Location, etc.
+
+    -   Convert to Binary Classes.
+
+**Shakir and Poojitha:** - Data Preprocessing
+
+-   Null value and Duplicate value treatment.
+
+-   Text Cleaning (removing special characters, stop words).
+
+-   Split dataset into training and testing.
+
+**Visalakshi, Himanshu and Avikal:** - Feature Extraction
+
+-   Tokenization.
+
+-   Stemming.
+
+-   Lemmatization.
+
+**All members:** - Classification
+
+-   Train and validate the model.
+
+-   Test on new tweets.
+
+**Week 2:**
+
+-   **Avikal, Visalakshi and Shakir:** Extract entities from the tweet that include information about geo-location, disaster-type, severity, time elapsed, etc. using NER techniques.
+
+-   **Himanshu and Poojitha:** Link the entities to tweets and save the information.
+
+**Week 3:**
+
+-   **Visalakshi and Avikal:** Use python Tweepy to extract information and setup data flow.
+
+-   **Shakir:** Define filtering parameters to separate disaster-related tweets.
+
+-   **Poojitha and Himanshu:** Process and store the incoming tweet data along with the extracted results from the tweet data.
+
+**Week 4:**
+
+-   **Everyone:** Visualize the extracted output in a GUI. This will include showing geographic locations of the affected regions.
+
+-   **Everyone:** Add a dashboard to this GUI that provides better analysis of the extracted information.
+
+**Week 5:**
+
+-   **Avika;, Shakir and Visalakshi:** Create an interface for the analysis dashboard.
+
+-   **Visalakshi and Himanshu:** Use maps to indicate affected locations.
+
+-   **Poojitha:** Generate intelligent analytics on the type of disaster, time elapsed, severity, etc.
+
+**Week 6:**
+
+-   **Everyone:** Deploy the GUI and the data.
+
+-   **Everyone:** Make changes according to feedback.
+
+-   **Everyone:** Make the final presentation for showcase.
+
+::: callout-note
+## Note:
+
+These are the planned approaches, and we intend to explore and solve the problem statement which we came up with. Parts of our approach might change in the final project.
+:::
+
+## Plan of Attack
+
+| Week            | Weekly Task                                                                                                                                       |
+|-----------------|-------------------------------------------------------|
+| Week 1          | Proposal.                                                                                                                                         |
+| Week 2          | Data Exploration and Preprocessing.                                                                                                               |
+| Week 3 - Week 4 | Working on setting up the API and Extracting Feature using methods like Tokenization, lemmatization etc. and train Models and perform prediction. |
+| Week 5          | Visualize the output by working on developing a GUI.                                                                                              |
+| Week 6          | Finalizing the project and complete preparing a presentation.                                                                                     |
+
+*\*\* We have added respective members for individual tasks in the Analysis Plan. We have removed Members Responsible Column from the table.*
+
+## Repo Organization
+
+-   `.github`: This directory contain files related to GitHub, such as workflows, issue templates, or other configurations.
+
+-   `. _extra`: Contains code, notes and other files used during experimentation. Contents of this folder is not a part of the final output.
+
+-   `_freeze`: The folder created to store files generated during project render.
+
+-   `analysis/`: This folder contains the analysis scripts used to generate output for the project outline.
+
+    -   README.md describes the steps to run and generate the results using scripts
+
+    -   Other code files are added to review and understand the source of the output
+
+    -   Relevant datasets used for the scripts are under the `data/` folder in the main directory.
+
+-   `disastertweetapp/`: This folder contains the code for GUI built using streamlit
+
+    -   `app.py`: Main folder containing the GUI code of the app.
+
+    -   `classification_script.py`: This file contains code for loading the trained models and functions to predict the class labels if given text. It also contains the code to extract location from the tweet.
+
+    -   `embedtweet.py`: This file contains code to embed tweets in the GUI
+
+    -   `fetchtweets.py`: This file contains the streaming client script to fetch real-time tweets using keywords.
+
+    -   `requirements.py`: requirements file containing package details
+
+    -   `models/`: Folder containing the serialized models
+
+-   `data/`: This folder contains data files or datasets that are used in the project.
+
+    -   README.md : A readme file that describes the datasets in more detail.
+
+-   `images`: This folder contains image files that are used in the project, such as illustrations, diagrams, or other visual assets.
+
+-   `.gitignore`: This file specifies which files or directories should be ignored by version control.
+
+-   `README.md`: This file usually contains documentation or information about the project. It's often the first thing someone reads when they visit the project repository.
+
+-   `_quarto.yml`: This is likely a configuration file
+
+-   `about.qmd` : This quarto document contains the information about team members.
+
+-   `index.qmd` : This quarto document contains the approach and analysis and results of the project.
+
+-   `presentation.qmd` : It contains the slides for the presentation.
+
+-   `proposal.qmd` : This quarto documents has the proposal of the project.
+
+-   `project-final.Rproj` : This is an RStudio project file, which helps organize R-related files and settings for the project.

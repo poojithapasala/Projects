@@ -1,0 +1,62 @@
+---
+title: "Revamping Movie and TV Show Review Classification using Logistic Regression "
+slug: "/poojithapasala/class-competition"
+date: 2024-04-28
+author: Poojitha Pasala
+description: "My approach combines TF-IDF vectorization with logistic regression, integrating hyperparameter optimization to achieve optimal and efficient review classification."
+tags:
+  - class competition
+---
+
+With the abundance of movie and TV show critiques spanning numerous platforms, there's an increasing demand for streamlined text categorization. Logistic regression, a classification algorithm was employed to enhance the classification accuracy of the reviews within the model.
+
+## Task
+
+The objective is to classify documents into three clear categories:
+1. Non-review content: Texts that do not pertain to movie or TV show reviews.
+2. Positive movie/TV show reviews: Texts expressing favorable sentiments towards the content.
+3. Negative movie/TV show reviews: Texts expressing unfavorable sentiments towards the content.
+
+## Approach
+
+- The process involved containerizing the model using Docker. First, Docker was utilized to build the image, followed by launching the container to execute the code.
+
+#### Importing libraries & loading data:
+
+- The necessary libraries are imported for data manipulation, text preprocessing, model training and evaluation.
+- The test and train data are loaded from respective csv files to prepare for text classification.
+
+#### Pre-processing text:
+
+- The 'TEXT' column in both datasets is preprocessed, ensuring consistency by handling missing values and applying custom text preprocessing.
+- The custom_preprocessor function is used to perform specific pattern substitutions, such as replacing URLs, numbers, and currency symbols with placeholder tokens.
+
+#### Feature engineering with TF-IDF vectorization:
+
+- The text data is transformed into numerical features using the TfidfVectorizer.
+- The model was experimented with different configurations of the TfidfVectorizer, varying parameters like ngram_range (the range of n-grams to consider) and max_features (the maximum number of features to extract). The chosen configuration strikes a good balance between capturing important information from the data and ensuring that the model performs efficiently.
+
+#### Model selection:
+
+- Logistic regression is opted as classification model due to its effectiveness in modeling binary outcomes and multiclass classification tasks.
+- The logistic regression model is initialized and trained with optimized hyperparameters, including class weights to address potential imbalances in the dataset.
+
+#### Cross-Validation & model evaluation:
+
+- The logistic regression model is evaluated using cross-validation with both accuracy and F1-score as evaluation metrics.
+- Cross-validation helps assess the model's generalization performance by splitting the training data into multiple subsets and training the model on different combinations of these subsets.
+- The mean cross-validation accuracy and F1-score provide insights into the model's performance across different folds.
+
+#### Making predictions and saving results:
+
+- The trained logistic regression model is then used to make predictions on the test set.
+- Predicted labels are updated in the test DataFrame, and the results are saved to a submission CSV file named 'submission.csv'.
+
+## Results
+
+The F1 Score on the Kaggle leaderboard is computed using approximately 80% of the test data. Here are the results achieved with the model used.
+- F1 Score: 0.91935
+
+## Code 
+- You can find my code in same repo.
+
